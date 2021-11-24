@@ -18,6 +18,7 @@ namespace WebApplication1
         public virtual DbSet<Lesson> Lessons { get; set; }
         public virtual DbSet<Schedule> Schedules { get; set; }
         public virtual DbSet<Teacher> Teachers { get; set; }
+        public virtual DbSet<Class> Classes { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -63,6 +64,8 @@ namespace WebApplication1
 
                 entity.Property(e => e.WeekId).HasColumnName("week_id");
 
+                entity.Property(e => e.ClassId).HasColumnName("class_id");
+
                 entity.HasOne(d => d.Lesson)
                     .WithMany(p => p.Schedules)
                     .HasForeignKey(d => d.LessonId)
@@ -77,6 +80,11 @@ namespace WebApplication1
                     .WithMany(p => p.Schedules)
                     .HasForeignKey(d => d.WeekId)
                     .HasConstraintName("schedule_week_id_fkey");
+
+                entity.HasOne(d => d.Class)
+                    .WithMany(p => p.Schedules)
+                    .HasForeignKey(d => d.ClassId)
+                    .HasConstraintName("schedule_class_id_fkey");
             });
 
             modelBuilder.Entity<Teacher>(entity =>
@@ -97,6 +105,18 @@ namespace WebApplication1
                     .HasMaxLength(30)
                     .HasColumnName("middle_name");
             });
+
+            modelBuilder.Entity<Class>(entity =>
+            {
+                entity.ToTable("classes");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Name)
+                    .HasMaxLength(30)
+                    .HasColumnName("name");
+            });
+
 
             OnModelCreatingPartial(modelBuilder);
         }
